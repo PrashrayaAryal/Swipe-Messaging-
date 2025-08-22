@@ -1,0 +1,5 @@
+{
+  "name": "React Swipe Match",
+  "description": "A simple mobile-first dating app simulation where users can swipe on profiles, match with others, and chat. Built with React and Tailwind CSS.",
+  "requestFramePermissions": []
+}
