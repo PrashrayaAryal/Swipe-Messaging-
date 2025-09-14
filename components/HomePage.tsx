@@ -32,7 +32,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLogin }) => {
 
         <div className="mt-8">
           <img
-            src="https://illustrations.popsy.co/gray/love.svg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbmsX4B6ObWVzD9xCzP4MEC8b1GeN18t_mfQ&s"
             alt="Dating illustration"
             className="w-64 mx-auto"
           />
