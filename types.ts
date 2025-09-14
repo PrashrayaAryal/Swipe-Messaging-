@@ -20,8 +20,11 @@ export interface Match {
 }
 
 export enum AppView {
-  ONBOARDING = 'ONBOARDING',
-  SWIPING = 'SWIPING',
-  MATCHES = 'MATCHES',
-  CHAT = 'CHAT',
+  HOME = "HOME",
+  LOGIN = "LOGIN",
+  ONBOARDING = "ONBOARDING",
+  SWIPING = "SWIPING",
+  MATCHES = "MATCHES",
+  CHAT = "CHAT",
 }
+
