@@ -1,0 +1,12 @@
+/* index.css */
+
+/* Hide vertical scrollbar but still allow scrolling */
+.hide-scrollbar {
+  overflow-y: scroll;          /* Make it scrollable */
+  -ms-overflow-style: none;    /* IE and Edge */
+  scrollbar-width: none;       /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari, Opera, Brave, Edge */
+}
