@@ -525,14 +525,341 @@
 // export default App;
 
 
-import React, { useState, useCallback } from "react";
+// import React, { useState, useCallback } from "react";
+// import { UserProfile, Match, Message, AppView } from "./types";
+// import OnboardingScreen from "./components/OnboardingScreen"; // used as Signup
+// import SwipeScreen from "./components/SwipeScreen";
+// import MatchesScreen from "./components/MatchesScreen";
+// import ChatScreen from "./components/ChatScreen";
+// import LoginScreen from "./components/LoginScreen";
+// import HomePage from "./components/HomePage";
+
+// const App: React.FC = () => {
+//   const [currentView, setCurrentView] = useState<AppView>(AppView.HOME);
+//   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+//   const [matches, setMatches] = useState<Match[]>([]);
+//   const [activeChat, setActiveChat] = useState<Match | null>(null);
+
+//   // When signup (OnboardingScreen) completes
+//   const handleSignupComplete = (profile: UserProfile) => {
+//     setUserProfile(profile);
+//     setCurrentView(AppView.SWIPING);
+//   };
+
+//   const handleLoginComplete = () => {
+//     setCurrentView(AppView.SWIPING);
+//   };
+
+//   const handleNavigate = (view: AppView) => {
+//     setCurrentView(view);
+//   };
+
+//   const handleNewMatch = useCallback((newMatchProfile: UserProfile) => {
+//     const newMatch: Match = {
+//       id: `match_${Date.now()}`,
+//       user: newMatchProfile,
+//       messages: [
+//         {
+//           id: `msg_${Date.now()}`,
+//           text: `You matched with ${newMatchProfile.name}!`,
+//           sender: "system",
+//           timestamp: new Date(),
+//         },
+//       ],
+//     };
+//     setMatches(prev => [...prev, newMatch]);
+//   }, []);
+
+//   const handleSelectChat = (match: Match) => {
+//     setActiveChat(match);
+//     setCurrentView(AppView.CHAT);
+//   };
+
+//   const handleBackToMatches = () => {
+//     setActiveChat(null);
+//     setCurrentView(AppView.MATCHES);
+//   };
+
+//   const handleBackToSwiping = () => {
+//     setActiveChat(null);
+//     setCurrentView(AppView.SWIPING);
+//   };
+
+//   const handleSendMessage = (matchId: string, message: Message) => {
+//     setMatches(prevMatches =>
+//       prevMatches.map(match => {
+//         if (match.id === matchId) {
+//           const updatedMessages = [...match.messages, message];
+//           setTimeout(() => {
+//             const reply: Message = {
+//               id: `msg_reply_${Date.now()}`,
+//               text: "That sounds interesting! Tell me more.",
+//               sender: match.user.id,
+//               timestamp: new Date(),
+//             };
+//             setMatches(prev =>
+//               prev.map(m =>
+//                 m.id === matchId ? { ...m, messages: [...updatedMessages, reply] } : m
+//               )
+//             );
+//           }, 1500);
+//           return { ...match, messages: updatedMessages };
+//         }
+//         return match;
+//       })
+//     );
+//   };
+
+//   const renderContent = () => {
+//     switch (currentView) {
+//       case AppView.HOME:
+//         return <HomePage onLogin={() => setCurrentView(AppView.LOGIN)} />;
+//       case AppView.LOGIN:
+//         return (
+//           <LoginScreen
+//             onLogin={handleLoginComplete}
+//             onSignUp={() => setCurrentView(AppView.SIGNUP)} // move to signup
+//             onBack={() => setCurrentView(AppView.HOME)}
+//           />
+//         );
+//       case AppView.SIGNUP:
+//         return <OnboardingScreen onComplete={handleSignupComplete} onBack={() => setCurrentView(AppView.LOGIN)} />;
+//       case AppView.SWIPING:
+//         if (!userProfile) {
+//           return <OnboardingScreen onComplete={handleSignupComplete} onBack={() => setCurrentView(AppView.LOGIN)} />;
+//         }
+//         return <SwipeScreen userProfile={userProfile} onNavigate={handleNavigate} onNewMatch={handleNewMatch} />;
+//       case AppView.MATCHES:
+//         return <MatchesScreen matches={matches} onSelectChat={handleSelectChat} onBack={handleBackToSwiping} />;
+//       case AppView.CHAT:
+//         if (activeChat) {
+//           const currentMatch = matches.find(m => m.id === activeChat.id);
+//           if (currentMatch) {
+//             return <ChatScreen match={currentMatch} onBack={handleBackToMatches} onSendMessage={handleSendMessage} />;
+//           }
+//         }
+//         return <MatchesScreen matches={matches} onSelectChat={handleSelectChat} onBack={handleBackToSwiping} />;
+//       default:
+//         return <HomePage onLogin={() => setCurrentView(AppView.LOGIN)} />;
+//     }
+//   };
+
+//   return (
+//     <div className="h-screen w-screen bg-gray-100 flex justify-center items-center overflow-auto">
+//       <div className="relative w-full max-w-md md:max-w-lg lg:max-w-2xl h-full md:h-auto bg-white shadow-2xl overflow-hidden flex flex-col">
+//         {renderContent()}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default App;
+
+
+// import React, { useState, useCallback, useEffect } from "react";
+// import { UserProfile, Match, Message, AppView } from "./types";
+// import OnboardingScreen from "./components/OnboardingScreen"; // used as Signup
+// import SwipeScreen from "./components/SwipeScreen";
+// import MatchesScreen from "./components/MatchesScreen";
+// import ChatScreen from "./components/ChatScreen";
+// import LoginScreen from "./components/LoginScreen";
+// import HomePage from "./components/HomePage";
+// import { API_BASE_URL } from "./config";
+
+// const App: React.FC = () => {
+//   const [currentView, setCurrentView] = useState<AppView>(AppView.HOME);
+//   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+//   const [matches, setMatches] = useState<Match[]>([]);
+//   const [activeChat, setActiveChat] = useState<Match | null>(null);
+
+//   // ✅ Check for saved token on app load
+//   useEffect(() => {
+//     const token = localStorage.getItem("token");
+//     if (token && !userProfile) {
+//       fetch(`${API_BASE_URL}/api/auth/me`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       })
+//         .then((res) => res.json())
+//         .then((data) => {
+//           if (data.user) {
+//             setUserProfile(data.user);
+//             setCurrentView(AppView.SWIPING);
+//           }
+//         })
+//         .catch((err) => console.error("Auto-login failed:", err));
+//     }
+//   }, [userProfile]);
+
+//   // ✅ When signup completes
+//   const handleSignupComplete = (profile: UserProfile) => {
+//     setUserProfile(profile);
+//     setCurrentView(AppView.SWIPING);
+//   };
+
+//   // ✅ When login completes
+//   const handleLoginComplete = (profile: UserProfile) => {
+//     setUserProfile(profile);
+//     setCurrentView(AppView.SWIPING);
+//   };
+
+//   const handleNavigate = (view: AppView) => {
+//     setCurrentView(view);
+//   };
+
+//   const handleNewMatch = useCallback((newMatchProfile: UserProfile) => {
+//     const newMatch: Match = {
+//       id: `match_${Date.now()}`,
+//       user: newMatchProfile,
+//       messages: [
+//         {
+//           id: `msg_${Date.now()}`,
+//           text: `You matched with ${newMatchProfile.name}!`,
+//           sender: "system",
+//           timestamp: new Date(),
+//         },
+//       ],
+//     };
+//     setMatches((prev) => [...prev, newMatch]);
+//   }, []);
+
+//   const handleSelectChat = (match: Match) => {
+//     setActiveChat(match);
+//     setCurrentView(AppView.CHAT);
+//   };
+
+//   const handleBackToMatches = () => {
+//     setActiveChat(null);
+//     setCurrentView(AppView.MATCHES);
+//   };
+
+//   const handleBackToSwiping = () => {
+//     setActiveChat(null);
+//     setCurrentView(AppView.SWIPING);
+//   };
+
+//   const handleSendMessage = (matchId: string, message: Message) => {
+//     setMatches((prevMatches) =>
+//       prevMatches.map((match) => {
+//         if (match.id === matchId) {
+//           const updatedMessages = [...match.messages, message];
+//           setTimeout(() => {
+//             const reply: Message = {
+//               id: `msg_reply_${Date.now()}`,
+//               text: "That sounds interesting! Tell me more.",
+//               sender: match.user.id,
+//               timestamp: new Date(),
+//             };
+//             setMatches((prev) =>
+//               prev.map((m) =>
+//                 m.id === matchId
+//                   ? { ...m, messages: [...updatedMessages, reply] }
+//                   : m
+//               )
+//             );
+//           }, 1500);
+//           return { ...match, messages: updatedMessages };
+//         }
+//         return match;
+//       })
+//     );
+//   };
+
+//   const renderContent = () => {
+//     switch (currentView) {
+//       case AppView.HOME:
+//         return <HomePage onLogin={() => setCurrentView(AppView.LOGIN)} />;
+
+//       case AppView.LOGIN:
+//         return (
+//           <LoginScreen
+//             onLogin={handleLoginComplete}
+//             onSignUp={() => setCurrentView(AppView.SIGNUP)}
+//             onBack={() => setCurrentView(AppView.HOME)}
+//           />
+//         );
+
+//       case AppView.SIGNUP:
+//         return (
+//           <OnboardingScreen
+//             onComplete={handleSignupComplete}
+//             onBack={() => setCurrentView(AppView.LOGIN)}
+//           />
+//         );
+
+//       case AppView.SWIPING:
+//         if (!userProfile) {
+//           return (
+//             <OnboardingScreen
+//               onComplete={handleSignupComplete}
+//               onBack={() => setCurrentView(AppView.LOGIN)}
+//             />
+//           );
+//         }
+//         return (
+//           <SwipeScreen
+//             userProfile={userProfile}
+//             onNavigate={handleNavigate}
+//             onNewMatch={handleNewMatch}
+//           />
+//         );
+
+//       case AppView.MATCHES:
+//         return (
+//           <MatchesScreen
+//             matches={matches}
+//             onSelectChat={handleSelectChat}
+//             onBack={handleBackToSwiping}
+//           />
+//         );
+
+//       case AppView.CHAT:
+//         if (activeChat) {
+//           const currentMatch = matches.find((m) => m.id === activeChat.id);
+//           if (currentMatch) {
+//             return (
+//               <ChatScreen
+//                 match={currentMatch}
+//                 onBack={handleBackToMatches}
+//                 onSendMessage={handleSendMessage}
+//               />
+//             );
+//           }
+//         }
+//         return (
+//           <MatchesScreen
+//             matches={matches}
+//             onSelectChat={handleSelectChat}
+//             onBack={handleBackToSwiping}
+//           />
+//         );
+
+//       default:
+//         return <HomePage onLogin={() => setCurrentView(AppView.LOGIN)} />;
+//     }
+//   };
+
+//   return (
+//     <div className="h-screen w-screen bg-gray-100 flex justify-center items-center overflow-auto">
+//       <div className="relative w-full max-w-md md:max-w-lg lg:max-w-2xl h-full md:h-auto bg-white shadow-2xl overflow-hidden flex flex-col">
+//         {renderContent()}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default App;
+
+
+
+import React, { useState, useEffect, useCallback } from "react";
 import { UserProfile, Match, Message, AppView } from "./types";
-import OnboardingScreen from "./components/OnboardingScreen"; // used as Signup
+import OnboardingScreen from "./components/OnboardingScreen";
 import SwipeScreen from "./components/SwipeScreen";
 import MatchesScreen from "./components/MatchesScreen";
 import ChatScreen from "./components/ChatScreen";
 import LoginScreen from "./components/LoginScreen";
 import HomePage from "./components/HomePage";
+import { API_BASE_URL } from "./config";
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.HOME);
@@ -540,19 +867,40 @@ const App: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [activeChat, setActiveChat] = useState<Match | null>(null);
 
-  // When signup (OnboardingScreen) completes
+  // ✅ Auto-login: check for token in localStorage on app load
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    fetch(`${API_BASE_URL}/api/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setUserProfile(data.user);
+          setCurrentView(AppView.SWIPING);
+        }
+      })
+      .catch((err) => console.error("Auto-login failed:", err));
+  }, []);
+
+  // ✅ When signup completes
   const handleSignupComplete = (profile: UserProfile) => {
     setUserProfile(profile);
     setCurrentView(AppView.SWIPING);
   };
 
-  const handleLoginComplete = () => {
+  // ✅ When login completes
+  const handleLoginComplete = (profile: UserProfile, token: string) => {
+    setUserProfile(profile);
+    localStorage.setItem("token", token); // save token
     setCurrentView(AppView.SWIPING);
   };
 
-  const handleNavigate = (view: AppView) => {
-    setCurrentView(view);
-  };
+  const handleNavigate = (view: AppView) => setCurrentView(view);
 
   const handleNewMatch = useCallback((newMatchProfile: UserProfile) => {
     const newMatch: Match = {
@@ -567,7 +915,7 @@ const App: React.FC = () => {
         },
       ],
     };
-    setMatches(prev => [...prev, newMatch]);
+    setMatches((prev) => [...prev, newMatch]);
   }, []);
 
   const handleSelectChat = (match: Match) => {
@@ -586,8 +934,8 @@ const App: React.FC = () => {
   };
 
   const handleSendMessage = (matchId: string, message: Message) => {
-    setMatches(prevMatches =>
-      prevMatches.map(match => {
+    setMatches((prevMatches) =>
+      prevMatches.map((match) => {
         if (match.id === matchId) {
           const updatedMessages = [...match.messages, message];
           setTimeout(() => {
@@ -597,9 +945,11 @@ const App: React.FC = () => {
               sender: match.user.id,
               timestamp: new Date(),
             };
-            setMatches(prev =>
-              prev.map(m =>
-                m.id === matchId ? { ...m, messages: [...updatedMessages, reply] } : m
+            setMatches((prev) =>
+              prev.map((m) =>
+                m.id === matchId
+                  ? { ...m, messages: [...updatedMessages, reply] }
+                  : m
               )
             );
           }, 1500);
@@ -614,31 +964,71 @@ const App: React.FC = () => {
     switch (currentView) {
       case AppView.HOME:
         return <HomePage onLogin={() => setCurrentView(AppView.LOGIN)} />;
+
       case AppView.LOGIN:
         return (
           <LoginScreen
             onLogin={handleLoginComplete}
-            onSignUp={() => setCurrentView(AppView.SIGNUP)} // move to signup
+            onSignUp={() => setCurrentView(AppView.SIGNUP)}
             onBack={() => setCurrentView(AppView.HOME)}
           />
         );
+
       case AppView.SIGNUP:
-        return <OnboardingScreen onComplete={handleSignupComplete} onBack={() => setCurrentView(AppView.LOGIN)} />;
+        return (
+          <OnboardingScreen
+            onComplete={handleSignupComplete}
+            onBack={() => setCurrentView(AppView.LOGIN)}
+          />
+        );
+
       case AppView.SWIPING:
         if (!userProfile) {
-          return <OnboardingScreen onComplete={handleSignupComplete} onBack={() => setCurrentView(AppView.LOGIN)} />;
+          return (
+            <OnboardingScreen
+              onComplete={handleSignupComplete}
+              onBack={() => setCurrentView(AppView.LOGIN)}
+            />
+          );
         }
-        return <SwipeScreen userProfile={userProfile} onNavigate={handleNavigate} onNewMatch={handleNewMatch} />;
+        return (
+          <SwipeScreen
+            userProfile={userProfile}
+            onNavigate={handleNavigate}
+            onNewMatch={handleNewMatch}
+          />
+        );
+
       case AppView.MATCHES:
-        return <MatchesScreen matches={matches} onSelectChat={handleSelectChat} onBack={handleBackToSwiping} />;
+        return (
+          <MatchesScreen
+            matches={matches}
+            onSelectChat={handleSelectChat}
+            onBack={handleBackToSwiping}
+          />
+        );
+
       case AppView.CHAT:
         if (activeChat) {
-          const currentMatch = matches.find(m => m.id === activeChat.id);
+          const currentMatch = matches.find((m) => m.id === activeChat.id);
           if (currentMatch) {
-            return <ChatScreen match={currentMatch} onBack={handleBackToMatches} onSendMessage={handleSendMessage} />;
+            return (
+              <ChatScreen
+                match={currentMatch}
+                onBack={handleBackToMatches}
+                onSendMessage={handleSendMessage}
+              />
+            );
           }
         }
-        return <MatchesScreen matches={matches} onSelectChat={handleSelectChat} onBack={handleBackToSwiping} />;
+        return (
+          <MatchesScreen
+            matches={matches}
+            onSelectChat={handleSelectChat}
+            onBack={handleBackToSwiping}
+          />
+        );
+
       default:
         return <HomePage onLogin={() => setCurrentView(AppView.LOGIN)} />;
     }
@@ -654,3 +1044,5 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+

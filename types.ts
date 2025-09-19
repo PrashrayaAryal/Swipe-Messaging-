@@ -26,5 +26,6 @@ export enum AppView {
   SWIPING = "SWIPING",
   MATCHES = "MATCHES",
   CHAT = "CHAT",
+  SIGNUP="SIGNUP",
 }
 
